@@ -1,15 +1,19 @@
 import React from 'react'
 import { useAuth } from '../AuthContext'
+import { Navigate } from 'react-router-dom';
 
 
 
 const Home = () => {
-  const {handleLogout}=useAuth();
-  
+  const { handleLogout, user } = useAuth();
+
+  if (!user) {
+    return <Navigate to={'/login'} />
+  }
   return (
-    <button onClick={handleLogout}>
-    Logout
-    </button>
+    <>
+      hi
+    </>
   )
 }
 

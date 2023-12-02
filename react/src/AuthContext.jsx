@@ -3,12 +3,14 @@ import axiosInstance from './api';
 
 const AuthContent = createContext({
 	user: null,
-	setUser: () => {},
-	csrfToken: () => {},
+	setUser: () => { },
+	csrfToken: () => { },
 });
 
 
 export const AuthProvider = ({ children }) => {
+	const [loading, setLoading] = useState(false);
+	const [sideBarisOpen, setsideBarisOpen] = useState(false);
 	const [user, _setUser] = useState(
 		JSON.parse(localStorage.getItem('user')) || null
 	);
@@ -30,18 +32,38 @@ export const AuthProvider = ({ children }) => {
 	};
 	// logout user
 	const handleLogout = async () => {
+
+
 		try {
-			const resp = await axiosInstance.post('/logout');
+			const authToken = localStorage.getItem('authToken');
+			setLoading(true);
+
+			const resp = await axiosInstance.post('/logout', {}, {
+				headers: {
+					'Authorization': `Bearer ${authToken}`
+				}
+			});
+
 			if (resp.status === 200) {
 				localStorage.removeItem('user');
+				setLoading(false); // Set loading to false before redirect
 				window.location.href = '/';
 			}
 		} catch (error) {
 			console.log(error);
+			setLoading(false);
 		}
 	};
+
+
+	// Side Bar Open Hide Mobiel Device
+
+
+	const toggleSidebar = () => {
+		setsideBarisOpen(!sideBarisOpen);
+	};
 	return (
-		<AuthContent.Provider value={{ user, setUser, csrfToken,handleLogout }}>
+		<AuthContent.Provider value={{ user, setUser, csrfToken, handleLogout, loading, toggleSidebar, setsideBarisOpen, sideBarisOpen }}>
 			{children}
 		</AuthContent.Provider>
 	);

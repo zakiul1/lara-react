@@ -4,6 +4,7 @@ use App\Http\Controllers\API\Auth\LoginController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\API\Auth\RegisterController;
+
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -20,7 +21,4 @@ use App\Http\Controllers\API\Auth\RegisterController;
 
 Route::post('/register', [RegisterController::class, 'register']);
 Route::post('/login', [LoginController::class, 'login']);
-Route::middleware('auth:sanctum')->group(function () {
-    Route::post('/logout', [LoginController::class, 'logout']);
-   // Route::get('/user', [AuthController::class, 'user']);
-});
+Route::middleware('auth:sanctum')->post('/logout', [LoginController::class, 'logout']);

@@ -12,34 +12,35 @@ class LoginController extends Controller
 {
     public function login(Request $request)
     {
-       $data= $request->validate([
+        $data = $request->validate([
             'email' => 'required|string|email',
             'password' => 'required|string',
         ]);
 
-
         $user = User::where('email', $data['email'])->first();
+
         if (!$user || !Hash::check($data['password'], $user->password)) {
             return response()->json([
-                'message' => 'Email or password is incorrect!'
+                'errors' => [
+                    'email' => ['Email or password is incorrect!'],
+                ]
             ], 401);
         }
-        $token = $user->createToken('auth_token')->plainTextToken;
 
+        $token = $user->createToken('auth_token')->plainTextToken;
         $cookie = cookie('token', $token, 60 * 24); // 1 day
 
         return response()->json([
-            'user' =>  $user,
-            'cookie' =>  $cookie,
-            'token' =>  $token,
-
+            'user' => $user,
+            'cookie' => $cookie,
+            'token' => $token,
         ], 201);
     }
 
-    public function logout(Request $request)
 
+    public function logout(Request $request)
     {
-        dd($request->user());
+        //dd($request->user()->currentAccessToken());
         $request->user()->currentAccessToken()->delete();
 
         $cookie = cookie()->forget('token');
